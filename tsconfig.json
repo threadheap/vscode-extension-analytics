@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"declaration": true,
+		"strict": true,
+		"moduleResolution": "node",
+		"lib": [
+			"es2016"
+		],
+		"outDir": "./out",
+	},
+	"exclude": [
+		"lib",
+		"node_modules",
+		"**/node_modules/**",
+		"**/__tests__/**"
+	],
+	"include": [
+		"src"
+	]
+}
