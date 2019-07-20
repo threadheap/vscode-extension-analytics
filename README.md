@@ -28,7 +28,7 @@ This module mostly a fork of [vscode-extension-telemetry](https://github.com/Mic
  function activate(context: vscode.ExtensionContext) {
     ...
     // create analytics provider on extension activation
-    analyticsProvider = new AnalyticsProvider(extensionId, extensionVersion, client);
+    analyticsProvider = new AnalyticsProvider(extensionId, extensionVersion, client, options);
     // ensure it gets property disposed
     context.subscriptions.push(analyticsProvider);
     ...
