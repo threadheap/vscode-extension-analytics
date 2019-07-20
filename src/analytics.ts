@@ -5,6 +5,11 @@ import * as path from "path"
 import * as vscode from "vscode"
 import { AnalyticsEvent, Exception, Attributes } from "./events"
 
+interface AnalyticsReporterOptions {
+    configId?: string,
+    configEnabledId?: string
+}
+
 export class AnalyticsReporter {
     private extensionId: string
     private extensionVersion: string
@@ -12,8 +17,8 @@ export class AnalyticsReporter {
     private userOptIn: boolean = false
     private readonly configListener: vscode.Disposable
 
-    private static TELEMETRY_CONFIG_ID = "telemetry"
-    private static TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry"
+    private telemetryConfigId: string = "telemetry"
+    private telemetryConfigEnabledId: string = "enableTelemetry"
 
     private logStream: fs.WriteStream | undefined
 
@@ -22,7 +27,8 @@ export class AnalyticsReporter {
     constructor(
         extensionId: string,
         extensionVersion: string,
-        client: IAnalyticsClient
+        client: IAnalyticsClient,
+        options?: AnalyticsReporterOptions
     ) {
         let logFilePath = process.env["VSCODE_LOGS"] || ""
         if (
@@ -37,6 +43,14 @@ export class AnalyticsReporter {
                 autoClose: true
             })
         }
+        if (options) {
+            if (options.configId) {
+                this.telemetryConfigId = options.configId
+            }
+            if (options.configEnabledId) {
+                this.telemetryConfigEnabledId = options.configEnabledId
+            }
+        }
         this.extensionId = extensionId
         this.extensionVersion = extensionVersion
         this.analyticsClient = client
@@ -48,10 +62,10 @@ export class AnalyticsReporter {
 
     private updateUserOptIn(): void {
         const config = vscode.workspace.getConfiguration(
-            AnalyticsReporter.TELEMETRY_CONFIG_ID
+            this.telemetryConfigId
         )
         this.userOptIn = config.get<boolean>(
-            AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID,
+            this.telemetryConfigEnabledId,
             true
         )
         if (this.userOptIn) {

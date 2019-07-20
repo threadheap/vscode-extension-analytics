@@ -40,9 +40,11 @@ var os = require("os");
 var path = require("path");
 var vscode = require("vscode");
 var AnalyticsReporter = /** @class */ (function () {
-    function AnalyticsReporter(extensionId, extensionVersion, client) {
+    function AnalyticsReporter(extensionId, extensionVersion, client, options) {
         var _this = this;
         this.userOptIn = false;
+        this.telemetryConfigId = "telemetry";
+        this.telemetryConfigEnabledId = "enableTelemetry";
         this.commonAttributes = {};
         var logFilePath = process.env["VSCODE_LOGS"] || "";
         if (logFilePath &&
@@ -55,6 +57,14 @@ var AnalyticsReporter = /** @class */ (function () {
                 autoClose: true
             });
         }
+        if (options) {
+            if (options.configId) {
+                this.telemetryConfigId = options.configId;
+            }
+            if (options.configEnabledId) {
+                this.telemetryConfigEnabledId = options.configEnabledId;
+            }
+        }
         this.extensionId = extensionId;
         this.extensionVersion = extensionVersion;
         this.analyticsClient = client;
@@ -64,8 +74,8 @@ var AnalyticsReporter = /** @class */ (function () {
         });
     }
     AnalyticsReporter.prototype.updateUserOptIn = function () {
-        var config = vscode.workspace.getConfiguration(AnalyticsReporter.TELEMETRY_CONFIG_ID);
-        this.userOptIn = config.get(AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID, true);
+        var config = vscode.workspace.getConfiguration(this.telemetryConfigId);
+        this.userOptIn = config.get(this.telemetryConfigEnabledId, true);
         if (this.userOptIn) {
             this.initialiseAnalyticsClient();
         }
@@ -148,8 +158,6 @@ var AnalyticsReporter = /** @class */ (function () {
             });
         });
     };
-    AnalyticsReporter.TELEMETRY_CONFIG_ID = "telemetry";
-    AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
     return AnalyticsReporter;
 }());
 exports.AnalyticsReporter = AnalyticsReporter;

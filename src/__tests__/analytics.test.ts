@@ -38,11 +38,11 @@ describe("AnalyticsReporter", () => {
     let client: MockClient
 
     beforeEach(() => {
-        ; (vscodeMock as any).workspace = workspaceMock
-            ; (vscodeMock as any).env = {
-                machineId,
-                sessionId
-            }
+        ;(vscodeMock as any).workspace = workspaceMock
+        ;(vscodeMock as any).env = {
+            machineId,
+            sessionId
+        }
         client = new MockClient()
         reporter = new AnalyticsReporter(extensionId, extensionVersion, client)
     })
