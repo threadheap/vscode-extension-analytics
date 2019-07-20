@@ -1,7 +1,7 @@
 {
     "name": "vscode-extension-analytics",
     "description": "Telemetry and analytics client for VSCode extensions with customisable transports.",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "author": {
         "name": "Pavel Vlasov <freakycue@gmail.com>"
     },

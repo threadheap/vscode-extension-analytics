@@ -10,11 +10,14 @@ export declare class AnalyticsReporter {
     private analyticsClient;
     private userOptIn;
     private readonly configListener;
-    private telemetryConfigId;
-    private telemetryConfigEnabledId;
+    private static TELEMETRY_CONFIG_ID;
+    private static TELEMETRY_CONFIG_ENABLED_ID;
+    private telemetryConfigId?;
+    private telemetryConfigEnabledId?;
     private logStream;
     private commonAttributes;
     constructor(extensionId: string, extensionVersion: string, client: IAnalyticsClient, options?: AnalyticsReporterOptions);
+    private getUserOptInSettings;
     private updateUserOptIn;
     private initialiseAnalyticsClient;
     private getCommonAttributes;

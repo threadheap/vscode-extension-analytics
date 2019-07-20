@@ -43,8 +43,6 @@ var AnalyticsReporter = /** @class */ (function () {
     function AnalyticsReporter(extensionId, extensionVersion, client, options) {
         var _this = this;
         this.userOptIn = false;
-        this.telemetryConfigId = "telemetry";
-        this.telemetryConfigEnabledId = "enableTelemetry";
         this.commonAttributes = {};
         var logFilePath = process.env["VSCODE_LOGS"] || "";
         if (logFilePath &&
@@ -73,9 +71,15 @@ var AnalyticsReporter = /** @class */ (function () {
             return _this.updateUserOptIn();
         });
     }
+    AnalyticsReporter.prototype.getUserOptInSettings = function (configId, enabledId) {
+        var config = vscode.workspace.getConfiguration(AnalyticsReporter.TELEMETRY_CONFIG_ID);
+        return config.get(AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID, true);
+    };
     AnalyticsReporter.prototype.updateUserOptIn = function () {
-        var config = vscode.workspace.getConfiguration(this.telemetryConfigId);
-        this.userOptIn = config.get(this.telemetryConfigEnabledId, true);
+        var vsCodeTelemetryEnabled = this.getUserOptInSettings(AnalyticsReporter.TELEMETRY_CONFIG_ID, AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID);
+        var extensionTelemetryEnabled = this.telemetryConfigId && this.telemetryConfigEnabledId ?
+            this.getUserOptInSettings(this.telemetryConfigId, this.telemetryConfigEnabledId) : true;
+        this.userOptIn = vsCodeTelemetryEnabled && extensionTelemetryEnabled;
         if (this.userOptIn) {
             this.initialiseAnalyticsClient();
         }
@@ -158,6 +162,8 @@ var AnalyticsReporter = /** @class */ (function () {
             });
         });
     };
+    AnalyticsReporter.TELEMETRY_CONFIG_ID = "telemetry";
+    AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry";
     return AnalyticsReporter;
 }());
 exports.AnalyticsReporter = AnalyticsReporter;
