@@ -17,8 +17,11 @@ export class AnalyticsReporter {
     private userOptIn: boolean = false
     private readonly configListener: vscode.Disposable
 
-    private telemetryConfigId: string = "telemetry"
-    private telemetryConfigEnabledId: string = "enableTelemetry"
+    private static TELEMETRY_CONFIG_ID = "telemetry"
+    private static TELEMETRY_CONFIG_ENABLED_ID = "enableTelemetry"
+
+    private telemetryConfigId?: string
+    private telemetryConfigEnabledId?: string
 
     private logStream: fs.WriteStream | undefined
 
@@ -60,14 +63,25 @@ export class AnalyticsReporter {
         )
     }
 
-    private updateUserOptIn(): void {
+    private getUserOptInSettings(configId: string, enabledId: string): boolean {
         const config = vscode.workspace.getConfiguration(
-            this.telemetryConfigId
+            AnalyticsReporter.TELEMETRY_CONFIG_ID
         )
-        this.userOptIn = config.get<boolean>(
-            this.telemetryConfigEnabledId,
+        return config.get<boolean>(
+            AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID,
             true
         )
+    }
+
+    private updateUserOptIn(): void {
+        const vsCodeTelemetryEnabled = this.getUserOptInSettings(
+            AnalyticsReporter.TELEMETRY_CONFIG_ID,
+            AnalyticsReporter.TELEMETRY_CONFIG_ENABLED_ID
+        )
+        const extensionTelemetryEnabled = this.telemetryConfigId && this.telemetryConfigEnabledId ?
+            this.getUserOptInSettings(this.telemetryConfigId, this.telemetryConfigEnabledId) : true
+
+        this.userOptIn = vsCodeTelemetryEnabled && extensionTelemetryEnabled
         if (this.userOptIn) {
             this.initialiseAnalyticsClient()
         } else {
